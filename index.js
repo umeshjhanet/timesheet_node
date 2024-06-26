@@ -13,7 +13,7 @@ const db = mysql.createConnection({
   port: "3306",
   user: "root",
   password: "root",
-  database: "timesheet_db",
+  database: "timesheetdb",
 });
 
 db.connect((err) => {
@@ -65,35 +65,29 @@ app.get("/getstatus", (req, res) => {
     });
   });
 
-app.put("/updatestatus/:id", (req, res) => {
-    const data = req.body;
+  app.put("/updatestatus/:id", (req, res) => {
+    const { username, task, taskstatus } = req.body;
     const { id } = req.params;
   
-    const query1 = `
-        UPDATE tbl_user_master 
-        SET 
-            username = ?, 
-            task = ?, 
-            taskstatus = ?
-        WHERE id = ?
+    const query = `
+      UPDATE tbl_status_log
+      SET 
+        username = ?, 
+        task = ?, 
+        taskstatus = ?
+      WHERE id = ?
     `;
   
-    const params1 = [
-        data.username,
-        data.task,
-        data.taskstatus,
-        id
-    ];
+    db.query(query, [username, task, taskstatus, id], (err, results) => {
+      if (err) {
+        console.error("Error updating status:", err);
+        return res.status(500).json({ error: "An error occurred while updating status" });
+      }
   
-    db.query(query1, params1, (err, results) => {
-        if (err) {
-            console.error("Error updating status:", err);
-            return res.status(500).json({ error: "An error occurred while updating status" });
-        }
-  
-        res.status(200).json({ message: "status updated successfully", id: id });
+      res.status(200).json({ message: "status updated successfully", id: id });
     });
   });
+  
   
 app.delete("/deletestatus/:id", (req, res) => {
     const { id} = req.params;

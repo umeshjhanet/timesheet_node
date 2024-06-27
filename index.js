@@ -84,7 +84,6 @@ app.put("/updatestatus/:id", (req, res) => {
         data.taskstatus,
         id
     ];
-  
     db.query(query1, params1, (err, results) => {
         if (err) {
             console.error("Error updating status:", err);
